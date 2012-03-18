@@ -13,9 +13,9 @@ Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
   pos1 = page.body.index(e1)
   pos2 = page.body.index(e2)
   if (pos1 != nil and pos2 != nil)
-    page.body.index(e1) < page.body.index(e2)
+    assert page.body.index(e1) < page.body.index(e2)
   else
-    false
+    assert false
   end
 end
 
@@ -25,7 +25,7 @@ end
 
 When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
   rating_list.split(/,\s*/).each do |mv|
-    if (uncheck != nil)
+    if (uncheck == nil)
       When %Q{I check "ratings_#{mv}"}
     else
       When %Q{I uncheck "ratings_#{mv}"}
@@ -34,5 +34,5 @@ When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
 end
 
 Then /I should see all of the movies/ do
-  Movie.all.count == (page.all('#movies td').count -1)
+  assert Movie.all.count == (page.all('#movies tr').count - 1)
 end
