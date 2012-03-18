@@ -2,7 +2,7 @@
 
 Given /the following movies exist/ do |movies_table|
   movies_table.hashes.each do |movie|
-     Movie.create(movie)
+     Movie.create!(movie)
   end
 end
 
@@ -10,9 +10,13 @@ end
 #   on the same page
 
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
-  #  ensure that that e1 occurs before e2.
-  #  page.content  is the entire content of the page as a string.
-  assert false, "Unimplmemented"
+  pos1 = page.body.index(e1)
+  pos2 = page.body.index(e2)
+  if (pos1 != nil and pos2 != nil)
+    page.body.index(e1) < page.body.index(e2)
+  else
+    false
+  end
 end
 
 # Make it easier to express checking or unchecking several boxes at once
@@ -20,7 +24,15 @@ end
 #  "When I check the following ratings: G"
 
 When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
-  # HINT: use String#split to split up the rating_list, then
-  #   iterate over the ratings and reuse the "When I check..." or
-  #   "When I uncheck..." steps in lines 89-95 of web_steps.rb
+  rating_list.split(/,\s*/).each do |mv|
+    if (uncheck != nil)
+      When %Q{I check "ratings_#{mv}"}
+    else
+      When %Q{I uncheck "ratings_#{mv}"}
+    end
+  end
+end
+
+Then /I should see all of the movies/ do
+  Movie.all.count == (page.all('#movies td').count -1)
 end
