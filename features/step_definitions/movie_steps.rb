@@ -36,3 +36,7 @@ end
 Then /I should see all of the movies/ do
   assert Movie.all.count == (page.all('#movies tr').count - 1)
 end
+
+Then /the director of "[\w ]*" should be "([\w ]*)"/ do |director|
+  page.body.should match /Director:\s*#{director}/
+end
